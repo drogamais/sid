@@ -1,0 +1,183 @@
+<!-- Lojas page content (rendered inside layout.ejs) -->
+<div class="space-y-6">
+  <section class="rounded-3xl bg-white p-6 shadow-panel">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Base</p>
+        <h2 class="text-3xl font-bold">Lojas</h2>
+        <p class="mt-2 text-sm text-slate-500">Listagem de unidades com gestão de acesso por perfil (SSR version).</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-600">
+          Total: <span class="font-semibold text-ink" id="totalCount">--</span>
+        </div>
+        <% if (user && user.role === 'admin') { %>
+        <button onclick="window.location.href='/app/lojas/novo'" class="rounded-2xl bg-sid-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sid-700">
+          Nova loja
+        </button>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <section class="rounded-3xl bg-white p-6 shadow-panel">
+    <form id="searchForm" class="flex flex-col gap-3 md:flex-row md:items-center">
+      <div class="flex w-full gap-3">
+        <input id="searchInput" class="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-sid-500 focus:bg-white" placeholder="Buscar por fantasia, razão social, CNPJ, cidade ou responsável" />
+        <select id="filterInaug" class="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm outline-none">
+          <option value="">Todas (Inaugurada)</option>
+          <option value="true">Sim</option>
+          <option value="false">Não</option>
+        </select>
+        <select id="filterAtiva" class="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm outline-none">
+          <option value="">Todas (Ativa)</option>
+          <option value="true">Sim</option>
+          <option value="false">Não</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-3 md:ml-auto">
+        <button class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-black" type="submit">Buscar</button>
+      </div>
+    </form>
+  </section>
+
+  <p id="listError" class="hidden rounded-3xl bg-red-50 px-5 py-4 text-sm text-red-700"></p>
+
+  <section class="overflow-hidden rounded-3xl bg-white shadow-panel">
+    <div class="overflow-x-auto">
+      <table class="min-w-full border-collapse">
+        <thead class="bg-slate-50 text-left text-[10px] uppercase tracking-[0.18em] text-slate-500">
+          <tr>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="loja_numero">Nº</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="fantasia">FANTASIA</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="cnpj">CNPJ</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="cidade">CIDADE</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="atendente">ATENDIMENTO</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="analista">ANALISTA</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="cat">CAT</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="sistema_erp">SISTEMA</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="responsavel">RESPONSÁVEL</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="inaugurada">INAUGURADA</th>
+            <th class="cursor-pointer px-5 py-4 transition hover:bg-slate-100 group sort-btn" data-field="ativo">ATIVA</th>
+            <% if (user && user.role === 'admin') { %>
+            <th class="px-5 py-4">AÇÕES</th>
+            <% } %>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td class="px-5 py-10 text-center text-sm text-slate-500" colspan="12">Carregando lojas...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+      <p id="pageInfo">Página 1 de 1</p>
+      <div class="flex gap-3">
+        <button id="prevBtn" class="rounded-2xl border border-slate-200 px-4 py-2 font-semibold text-slate-600 hover:bg-slate-50 transition disabled:cursor-not-allowed disabled:opacity-50" disabled>Anterior</button>
+        <button id="nextBtn" class="rounded-2xl border border-slate-200 px-4 py-2 font-semibold text-slate-600 hover:bg-slate-50 transition disabled:cursor-not-allowed disabled:opacity-50" disabled>Próxima</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const HUB_URL = "http://localhost:8003";
+  const isAdmin = document.body.dataset.admin === 'true';
+
+  let page = 1, search = '', ordering = '-loja_numero';
+
+  const tbody       = document.getElementById('tableBody');
+  const totalEl     = document.getElementById('totalCount');
+  const pageInfoEl  = document.getElementById('pageInfo');
+  const prevBtnEl   = document.getElementById('prevBtn');
+  const nextBtnEl   = document.getElementById('nextBtn');
+  const listErrorEl = document.getElementById('listError');
+  const filterInaug = document.getElementById('filterInaug');
+  const filterAtiva = document.getElementById('filterAtiva');
+
+  function statusPill(active) {
+    return active
+      ? '<span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold bg-emerald-100 text-emerald-700">Sim</span>'
+      : '<span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold bg-rose-100 text-rose-700">Não</span>';
+  }
+
+  async function loadData() {
+    try {
+      const params = new URLSearchParams({ page: String(page) });
+      if (search) params.set('search', search);
+      if (ordering) params.set('ordering', ordering);
+      // apply filters
+      const fIn = filterInaug?.value;
+      const fAt = filterAtiva?.value;
+      if (fIn === 'true' || fIn === 'false') params.set('inaugurada', fIn);
+      if (fAt === 'true' || fAt === 'false') params.set('ativo', fAt);
+
+      const res = await fetch('/api/lojas/?' + params.toString());
+      if (res.status === 401) { window.location.href = HUB_URL + '/login'; return; }
+      if (!res.ok) throw new Error('Falha ao carregar lojas');
+
+      const data = await res.json();
+      totalEl.textContent = data.count;
+      const totalPages = Math.max(1, Math.ceil(data.count / 20));
+      pageInfoEl.textContent = `Página ${page} de ${totalPages}`;
+      prevBtnEl.disabled = page <= 1;
+      nextBtnEl.disabled = !data.next;
+
+      if (!data.results.length) {
+        tbody.innerHTML = `<tr><td class="px-5 py-10 text-center text-sm text-slate-500" colspan="12">Nenhuma loja encontrada.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.results.map(l => {
+        let cols = `
+          <td class="px-5 py-4 font-bold text-ink whitespace-nowrap">${(l.loja_numero !== undefined && l.loja_numero !== null) ? l.loja_numero : '-'}</td>
+          <td class="px-5 py-4 font-semibold text-ink min-w-[180px]">${l.fantasia}</td>
+          <td class="px-5 py-4 whitespace-nowrap">${l.cnpj}</td>
+          <td class="px-5 py-4 whitespace-nowrap">${l.cidade || 'Não informado'}</td>
+          <td class="px-5 py-4 whitespace-nowrap">${l.atendente || '-'}</td>
+          <td class="px-5 py-4 whitespace-nowrap">${l.analista || '-'}</td>
+          <td class="px-5 py-4 whitespace-nowrap">${(l.cat !== undefined && l.cat !== null) ? l.cat : '-'}</td>
+          <td class="px-5 py-4 whitespace-nowrap">${l.sistema_erp || '-'}</td>
+          <td class="px-5 py-4 whitespace-nowrap">${l.responsavel || '-'}</td>
+          <td class="px-5 py-4">${statusPill(l.inaugurada)}</td>
+          <td class="px-5 py-4">${statusPill(l.ativo)}</td>
+        `;
+
+        // Always include Edit button; show Delete only to admins
+        cols += `
+          <td class="px-5 py-4">
+            <div class="flex gap-2">
+              <button class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[10px] font-bold text-slate-600 hover:bg-sid-50 hover:border-sid-200 hover:text-sid-700 transition" onclick="window.location.href='/app/lojas/${l.id_loja}'">Editar</button>
+              ${isAdmin ? `<button class="rounded-xl border border-red-100 bg-white px-3 py-2 text-[10px] font-bold text-red-600 hover:bg-red-50 hover:border-red-200 transition" onclick="deleteLoja(${l.id_loja}, '${l.fantasia}')">Excluir</button>` : ''}
+            </div>
+          </td>`;
+
+        return `<tr class="border-t border-slate-100 text-xs text-slate-700 transition hover:bg-slate-50/50">${cols}</tr>`;
+      }).join('');
+      listErrorEl.classList.add('hidden');
+    } catch (e) {
+      listErrorEl.textContent = e.message;
+      listErrorEl.classList.remove('hidden');
+    }
+  }
+
+  async function deleteLoja(id, rx) {
+    if(!confirm(`Excluir a loja ${rx}?`)) return;
+    try {
+      await fetch(`/api/lojas?id=${id}`, { method: 'DELETE' });
+      loadData();
+    } catch (err) { alert('Falha'); }
+  }
+
+  document.getElementById('searchForm').addEventListener('submit', e => { e.preventDefault(); search = document.getElementById('searchInput').value.trim(); page = 1; loadData(); });
+  document.querySelectorAll('.sort-btn').forEach(btn => btn.addEventListener('click', () => {
+    const f = btn.dataset.field;
+    ordering = ordering === f ? '-' + f : f;
+    page = 1;
+    loadData();
+  }));
+  prevBtnEl.addEventListener('click', () => { page--; loadData(); });
+  nextBtnEl.addEventListener('click', () => { page++; loadData(); });
+
+  loadData();
+</script>

@@ -1,0 +1,269 @@
+<!-- Loja form page content (rendered inside layout.ejs) -->
+<div>
+  <section class="rounded-3xl bg-white p-6 shadow-panel">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Lojas</p>
+        <h2 class="text-3xl font-bold"><%= editId ? 'Editar Loja' : 'Nova Loja' %></h2>
+        <p class="mt-2 text-sm text-slate-500" id="headerDesc">
+          <%= editId ? 'Carregando detalhes...' : 'Preencha os campos abaixo para adicionar uma nova loja ao sistema.' %>
+        </p>
+      </div>
+      <% if (editId) { %>
+        <div class="hidden lg:block">
+          <button id="btnTextEstudo" class="hidden rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100" type="button">Ver Texto Estudo</button>
+          <button id="btnTextCadastro" class="hidden rounded-2xl bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-700 transition hover:bg-sky-100" type="button">Ver Texto Cadastro</button>
+        </div>
+      <% } %>
+      <button onclick="window.location.href='/app/lojas'" class="rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50" type="button">Voltar para listagem</button>
+    </div>
+  </section>
+
+  <section class="rounded-3xl bg-white px-6 py-8 shadow-panel">
+    <form id="lojaForm" class="space-y-8">
+      <!-- Gerais -->
+      <div class="space-y-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-600">Gerais</h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Loja Número</label>
+            <input name="loja_numero" type="number" placeholder="Ex: 1" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Razão Social</label>
+            <input name="razao_social" type="text" placeholder="Razão social" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Fantasia</label>
+            <input name="fantasia" type="text" placeholder="Nome fantasia" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">CNPJ</label>
+            <input name="cnpj" type="text" placeholder="00.000.000/0000-00" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Inscrição Estadual</label>
+            <input name="inscricao_estadual" type="text" placeholder="Inscrição estadual" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Responsável</label>
+            <input name="responsavel" type="text" placeholder="Responsável" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div class="flex items-center gap-4">
+            <label class="flex items-center gap-2 text-sm">
+              <input name="inaugurada" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-sid-600" />
+              <span class="text-sm text-slate-700">Inaugurada</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm">
+              <input name="ativo" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-sid-600" />
+              <span class="text-sm text-slate-700">Ativo</span>
+            </label>
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Data de Cadastro</label>
+            <input name="data_cadastro" type="datetime-local" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Data de Inauguração</label>
+            <input name="data_inauguracao" type="date" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Contato -->
+      <div class="space-y-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-600">Contato</h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Telefone Fixo</label>
+            <input name="telefone_fixo" type="tel" placeholder="(00) 0000-0000" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Telefone Fixo 2</label>
+            <input name="telefone_fixo_2" type="tel" placeholder="Telefone alternativo" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Celular</label>
+            <input name="celular" type="tel" placeholder="(00) 90000-0000" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">E-mail</label>
+            <input name="email" type="email" placeholder="contato@empresa.com" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">E-mail 2</label>
+            <input name="email_2" type="email" placeholder="e-mail alternativo" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Endereço -->
+      <div class="space-y-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-600">Endereço</h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">CEP</label>
+            <input name="cep" type="text" placeholder="00000-000" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div class="md:col-span-2 lg:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700">Logradouro</label>
+            <input name="logradouro" type="text" placeholder="Rua, Avenida, Praça..." class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Número</label>
+            <input name="end_numero" type="text" placeholder="123" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Complemento</label>
+            <input name="end_complemento" type="text" placeholder="Apto, sala, bloco..." class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Bairro</label>
+            <input name="end_bairro" type="text" placeholder="Bairro" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Cidade</label>
+            <input name="cidade" type="text" placeholder="Cidade" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Latitude</label>
+            <input name="latitude" type="number" step="0.0000000000000001" placeholder="-23.000000" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Longitude</label>
+            <input name="longitude" type="number" step="0.0000000000000001" placeholder="-46.000000" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Sistema / Associação -->
+      <div class="space-y-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-600">Sistema / Associação</h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Sistema ERP</label>
+            <input name="sistema_erp" type="text" placeholder="ERP" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">ID PlugPharma</label>
+            <input name="id_plugpharma" type="number" placeholder="ID PlugPharma" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">PEC ID Convênio</label>
+            <input name="pec_id_convenio" type="text" placeholder="PEC convênio" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">PEC Código Acesso</label>
+            <input name="pec_cod_acesso" type="text" placeholder="Código de acesso" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Atendente</label>
+            <input name="atendente" type="text" placeholder="Atendente" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Analista</label>
+            <input name="analista" type="text" placeholder="Analista" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Categoria (cat)</label>
+            <input name="cat" type="number" placeholder="Categoria" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">ID Grupo Empresarial</label>
+            <input name="id_grupo_empresarial" type="number" placeholder="ID Grupo" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">PEC App</label>
+            <input name="pec_app" type="text" placeholder="PEC app" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </div>
+        </div>
+      </div>
+
+      <p id="formError" class="hidden mt-4 rounded-2xl bg-red-50 border border-red-100 px-4 py-3 text-sm font-medium text-red-700"></p>
+
+      <div class="flex justify-end gap-3 pt-4">
+        <button class="rounded-2xl border border-slate-200 bg-white px-8 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50" onclick="window.location.href='/app/lojas'" type="button">Cancelar</button>
+        <button id="submitBtn" class="rounded-2xl bg-sid-600 px-8 py-3 text-sm font-semibold text-white transition hover:bg-sid-700 xl:px-12" type="submit">
+          <%= editId ? 'Salvar alterações' : 'Criar loja' %>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <div id="textModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
+    <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl relative">
+      <button id="closeModalBtn" class="absolute right-6 top-6 rounded-xl border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-100 transition z-10">Fechar</button>
+      <pre id="modalContent" class="whitespace-pre-wrap rounded-2xl bg-slate-50 p-6 text-sm font-mono text-slate-800 leading-relaxed border border-slate-100"></pre>
+    </div>
+  </div>
+
+<script>
+  document.getElementById('logoutBtn')?.addEventListener('click', () => window.location.href = '/app/logout');
+
+  const editId = <%= editId ? editId : 'null' %>;
+  const form = document.getElementById('lojaForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const formError = document.getElementById('formError');
+
+  function showError(msg){
+    formError.textContent = msg || 'Erro ao processar requisição.';
+    formError.classList.remove('hidden');
+  }
+
+  function clearError(){
+    formError.textContent = '';
+    formError.classList.add('hidden');
+  }
+
+  async function loadLoja(){
+    if (!editId) return;
+    try{
+      const res = await fetch('/api/lojas/get?id=' + encodeURIComponent(editId));
+      if (!res.ok) throw new Error('Não foi possível carregar a loja.');
+      const l = await res.json();
+      // Populate form fields if present (name, endereco, ativo, inaugurada, etc.)
+      for (const key in l){
+        const el = form.querySelector('[name="' + key + '"]');
+        if (!el) continue;
+        if (el.type === 'checkbox') el.checked = !!l[key];
+        else el.value = l[key] ?? '';
+      }
+      document.getElementById('headerDesc').textContent = 'Editando loja: ' + (l.nome || l.id);
+    }catch(e){
+      showError('Falha ao carregar dados da loja.');
+    }
+  }
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    clearError();
+    submitBtn.disabled = true;
+    const data = Object.fromEntries(new FormData(form).entries());
+    // Normalize checkbox values to booleans
+    form.querySelectorAll('input[type=checkbox]').forEach(ch => {
+      data[ch.name] = ch.checked;
+    });
+    try{
+      const url = editId ? '/api/lojas?id=' + encodeURIComponent(editId) : '/api/lojas';
+      const method = editId ? 'PATCH' : 'POST';
+      const res = await fetch(url, {
+        method,
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(data),
+      });
+      if (!res.ok){
+        const payload = await res.json().catch(()=>null);
+        throw new Error(payload && payload.error ? payload.error : 'Request failed');
+      }
+      // Success: redirect back to list
+      window.location.href = '/app/lojas';
+    }catch(err){
+      showError(err.message || 'Erro ao salvar loja.');
+    }finally{
+      submitBtn.disabled = false;
+    }
+  });
+
+  loadLoja();
+</script>
+</div>

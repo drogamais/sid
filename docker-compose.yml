@@ -1,0 +1,23 @@
+services:
+  sid:
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    container_name: sid
+    ports:
+      - "8004:8004"
+    environment:
+      - PORT=8004
+      - NODE_ENV=development
+      - DISABLE_AUTH=true
+      # Choose dev role when DISABLE_AUTH=true: 'admin' or 'user'
+      - DEV_USER_ROLE=${DEV_USER_ROLE:-admin}
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    networks:
+      - sid_net
+
+networks:
+  sid_net:
+    driver: bridge

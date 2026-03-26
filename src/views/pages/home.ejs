@@ -1,0 +1,89 @@
+<!-- Home page content (rendered inside layout.ejs) -->
+<!-- Mobile header -->
+<div class="mb-6 flex items-center justify-between lg:hidden">
+  <div class="flex h-12 shrink-0 items-center justify-center rounded-2xl bg-sid-600 px-4 font-bold tracking-widest text-white shadow-md">
+    SID
+  </div>
+  <button id="backToHubBtnMobile" class="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-sid-600">Voltar ao Hub</button>
+</div>
+
+<div class="space-y-6">
+  <section class="grid gap-4 lg:grid-cols-3">
+    <article class="rounded-3xl bg-white p-5 shadow-panel">
+      <div class="mb-5 h-2 w-20 rounded-full bg-sky-500"></div>
+      <p class="text-sm uppercase tracking-[0.2em] text-slate-500">Associadas</p>
+      <h3 id="val-associadas" class="mt-3 text-4xl font-black text-ink">--</h3>
+    </article>
+    <article class="rounded-3xl bg-white p-5 shadow-panel">
+      <div class="mb-5 h-2 w-20 rounded-full bg-emerald-500"></div>
+      <p class="text-sm uppercase tracking-[0.2em] text-slate-500">Inauguradas</p>
+      <h3 id="val-inauguradas" class="mt-3 text-4xl font-black text-ink">--</h3>
+    </article>
+    <article class="rounded-3xl bg-white p-5 shadow-panel">
+      <div class="mb-5 h-2 w-20 rounded-full bg-rose-500"></div>
+      <p class="text-sm uppercase tracking-[0.2em] text-slate-500">Layoutização</p>
+      <h3 id="val-layoutzacao" class="mt-3 text-4xl font-black text-ink">--</h3>
+    </article>
+  </section>
+
+  <section class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+    <article class="rounded-3xl bg-white p-6 shadow-panel">
+      <div class="mb-6 flex items-center justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Home</p>
+          <h3 class="text-2xl font-bold">Resumo operacional</h3>
+        </div>
+        <div class="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-sid-700">SID</div>
+      </div>
+      <p class="max-w-2xl text-sm leading-7 text-slate-600">
+        Esta nova versão em Fastify SSR nasce com foco em carregamento instantâneo, unificando frontend e backend no lado do servidor para alta performance e segurança. A identidade visual, gestão de lojas e regras de acesso continuam fiéis à plataforma de intranet.
+      </p>
+    </article>
+
+    <article class="rounded-3xl bg-white p-6 shadow-panel">
+      <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Perfis</p>
+      <h3 class="mt-2 text-2xl font-bold">Regras de acesso</h3>
+      <div class="mt-6 space-y-4 text-sm text-slate-600">
+        <div class="rounded-2xl bg-slate-50 p-4">
+          <p class="font-semibold text-ink">Admin</p>
+          <p class="mt-1">Acessa Home e Lojas com permissão de escrita e edição (novo modelo SSR fastify).</p>
+        </div>
+        <div class="rounded-2xl bg-slate-50 p-4">
+          <p class="font-semibold text-ink">General</p>
+          <p class="mt-1">Acessa Home e Lojas apenas em modo leitura, sem botões de ação.</p>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>
+
+<script>
+  const HUB_URL = "http://localhost:8003";
+
+  document.getElementById('backToHubBtnMobile')?.addEventListener('click', goLogout);
+
+  function goLogout() {
+    window.location.href = '/app/logout';
+  }
+
+  async function loadSummary() {
+    try {
+      const res = await fetch('/api/home/summary');
+      if (!res.ok) {
+        if (res.status === 401) {
+          window.location.href = HUB_URL + '/login';
+          return;
+        }
+        throw new Error('Falha ao buscar resumo');
+      }
+      const data = await res.json();
+      document.getElementById('val-associadas').textContent = data.associadas ?? '--';
+      document.getElementById('val-inauguradas').textContent = data.inauguradas ?? '--';
+      document.getElementById('val-layoutzacao').textContent = data.layoutzacao ?? '--';
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  loadSummary();
+</script>

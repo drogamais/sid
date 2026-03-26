@@ -1,0 +1,40 @@
+<script>
+  // Sidebar behavior: overlay, hover auto-collapse, and manual toggle
+  (function () {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    const toggle = document.getElementById('sidebarToggle');
+    const STORAGE_KEY = 'sidebarCollapsed';
+    const AUTO_COLLAPSE = true;
+
+    function setCollapsed(collapsed, persist = false) {
+      sidebar.classList.toggle('collapsed', collapsed);
+      sidebar.classList.toggle('expanded', !collapsed);
+      if (persist) localStorage.setItem(STORAGE_KEY, collapsed ? 'true' : 'false');
+    }
+
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved === null) setCollapsed(true, false);
+      else setCollapsed(saved === 'true', false);
+    } catch (e) { setCollapsed(true, false); }
+
+    if (AUTO_COLLAPSE) {
+      sidebar.addEventListener('mouseenter', () => setCollapsed(false, false));
+      sidebar.addEventListener('mouseleave', () => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved === 'false') return;
+        setCollapsed(true, false);
+      });
+    }
+
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        const now = sidebar.classList.contains('collapsed');
+        setCollapsed(!now, true);
+      });
+    }
+
+    document.getElementById('logoutBtn')?.addEventListener('click', () => window.location.href = '/app/logout');
+  })();
+</script>
