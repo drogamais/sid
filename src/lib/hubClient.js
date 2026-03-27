@@ -25,10 +25,14 @@ async function refreshWithHub(refreshToken) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh: refreshToken })
       });
-      if (!res.ok) return null;
+      if (!res.ok) {
+        console.error('[HubClient] Refresh failed at Hub. Status:', res.status);
+        return null;
+      }
       const data = await res.json();
       return data.access || null;
     } catch (err) {
+      console.error('[HubClient] Error calling Hub refresh endpoint:', err.message);
       return null;
     } finally {
       // noop here; removal handled below

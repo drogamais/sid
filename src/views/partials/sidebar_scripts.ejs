@@ -39,6 +39,32 @@
   })();
 </script>
 
-<!-- Silent refresh: call Hub refresh endpoint hosted at http://localhost:8003 -->
-<script>window.HUB_REFRESH_URL = 'http://localhost:8003/api/auth/refresh';</script>
-<script src="http://localhost:8003/public/js/auth-shared.js"></script>
+<!-- Silent refresh: Renovação de sessão nativa do SID (proxy para o Hub) -->
+<script>
+  (function() {
+    const REFRESH_INTERVAL_MS = 45 * 1000; // 45 segundos para renovar o token de 60s
+
+    async function doSilentRefresh() {
+      try {
+        const res = await fetch('/api/auth/refresh-session', {
+          method: 'POST',
+          credentials: 'include' // Garante o envio do cookie sid_refresh_token
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          console.warn('[SID] Falha na renovação silenciosa. Status:', res.status, data.error || '');
+        } else {
+          console.log('[SID] Sessão renovada com sucesso silenciosamente.');
+        }
+      } catch (err) {
+        console.warn('[SID] Erro de rede ao tentar renovar a sessão.', err);
+      }
+    }
+
+    // Intervalo começa pequeno (5s) mas o loop depois é a cada 45s.
+    setTimeout(() => {
+      doSilentRefresh();
+      setInterval(doSilentRefresh, REFRESH_INTERVAL_MS);
+    }, 5000);
+  })();
+</script>
