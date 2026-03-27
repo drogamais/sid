@@ -25,7 +25,7 @@ async function pagesRoutes(fastify, options) {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
-          maxAge: 24 * 60 * 60 // 1 day
+          maxAge: 12 * 60 * 60 // 12 hours
         });
       }
       // Redirect to home without token in URL
