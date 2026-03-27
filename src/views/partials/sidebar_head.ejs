@@ -2,11 +2,13 @@
   /* Sidebar shared styles */
   #sidebar {
     transition: width .18s ease, box-shadow .18s ease;
+    overflow-x: hidden;
   }
-  #sidebar.expanded { width: 18rem; }
-  #sidebar.collapsed { width: 4rem; }
-  #sidebar .nav-label { transition: opacity .12s ease; }
+  #sidebar.expanded { width: 17rem; }
+  #sidebar.collapsed { width: 4.8rem; }
+  #sidebar .nav-label { transition: opacity .12s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   #sidebar.collapsed .nav-label { opacity: 0; display: none; }
+  #sidebar.collapsed #userProfileBox, #sidebar.collapsed #sidebarToggle { opacity: 0; display: none; }
   @media (min-width: 1024px) {
     #sidebar { position: fixed; inset: 0 auto 0 0; left: 0; top: 0; bottom: 0; z-index: 50; }
   }

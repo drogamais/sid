@@ -9,7 +9,7 @@ services:
     environment:
       - PORT=8004
       - NODE_ENV=development
-      - DISABLE_AUTH=true
+      - DISABLE_AUTH=${DISABLE_AUTH:-false}
       # Choose dev role when DISABLE_AUTH=true: 'admin' or 'user'
       - DEV_USER_ROLE=${DEV_USER_ROLE:-admin}
     env_file:
@@ -17,7 +17,11 @@ services:
     restart: unless-stopped
     networks:
       - sid_net
+      - drogamais_net
 
 networks:
   sid_net:
+    driver: bridge
+  drogamais_net:
+    name: drogamais_net
     driver: bridge

@@ -1,7 +1,8 @@
 const fetch = global.fetch || require('node-fetch');
 
-const HUB_REFRESH_URL = process.env.HUB_REFRESH_URL || (process.env.HUB_BASE_URL || 'http://localhost:8003') + '/api/auth/refresh';
-const HUB_LOGOUT_URL = process.env.HUB_LOGOUT_URL || (process.env.HUB_BASE_URL || 'http://localhost:8003') + '/api/auth/logout';
+const HUB_INTERNAL_BASE = process.env.HUB_INTERNAL_URL || 'http://hub:8003';
+const HUB_REFRESH_URL = HUB_INTERNAL_BASE + '/api/auth/refresh';
+const HUB_LOGOUT_URL = HUB_INTERNAL_BASE + '/api/auth/logout';
 
 async function refreshWithHub(refreshToken) {
   if (!refreshToken) return null;

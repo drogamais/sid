@@ -15,7 +15,7 @@ async function pagesRoutes(fastify, options) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 15 * 60 // 15 minutes in seconds
+        maxAge: 1 * 60 // 1 minute in seconds
       });
       // optional refresh_token in query: set as HTTPOnly long-lived cookie
       const { refresh_token } = request.query;
