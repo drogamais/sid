@@ -57,13 +57,23 @@ async function authMiddleware(request, reply) {
         reply.setCookie('sid_access_token', newAccess, {
           path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 1 * 60
         });
-        try {
-          const decoded = jwt.verify(newAccess, JWT_SECRET);
-          request.user = decoded;
-          return;
-        } catch (e) {
-          console.error('[Auth] Failed to verify newly refreshed token:', e.message);
-        }
+            try {
+              const decoded = jwt.verify(newAccess, JWT_SECRET);
+              // Resolve role like in the main path
+              const perms = decoded.appPermissions || {};
+              let role = 'normal';
+              if (perms['SID'] === 'admin' || perms['SID Lojas'] === 'admin') {
+                role = 'admin';
+              } else if (Object.values(perms).every(v => v === 'admin')) {
+                role = 'admin';
+              } else if (perms['SID'] === 'normal' || perms['SID Lojas'] === 'normal') {
+                role = 'normal';
+              }
+              request.user = { ...decoded, role };
+              return;
+            } catch (e) {
+              console.error('[Auth] Failed to verify newly refreshed token:', e.message);
+            }
       } else {
         console.warn('[Auth] Hub denied refresh. Session likely revoked.');
       }
