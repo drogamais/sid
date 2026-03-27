@@ -38,3 +38,7 @@
     document.getElementById('logoutBtn')?.addEventListener('click', () => window.location.href = 'http://localhost:8003/app/hub');
   })();
 </script>
+
+<!-- Silent refresh: call Hub refresh endpoint hosted at http://localhost:8003 -->
+<script>window.HUB_REFRESH_URL = 'http://localhost:8003/api/auth/refresh';</script>
+<script src="http://localhost:8003/js/auth-shared.js"></script>
